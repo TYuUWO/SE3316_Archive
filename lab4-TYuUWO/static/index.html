@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+</head>
+<body>
+    <h1> Click to begin </h1>
+    <a href='javascript:getQuestions()'> Click Here </a>
+    <div id='qDiv'></div>
+
+</body>
+
+<script>
+    function getQuestions()
+    {   //'/questions'
+        let xReq = new XMLHttpRequest();
+        xReq.onreadystatechange = displayQuestions;
+
+        xReq.open('GET','/questionsInJson',true);
+        xReq.send();
+    }
+
+    function displayQuestions()
+    {
+        if (this.readyState == 4 && this.status == 200)
+        {
+            let qDiv = document.getElementById('qDiv');
+
+            let qList = JSON.parse(this.responseText);
+            let content ='<form action=\'/post\' method = "post">';
+            //create set of questions
+            var i = 0;
+            for (q of qList)
+            {
+              //console.log(q);
+              content += "<div>";
+              content += `<label for="q`+i+`">${q.stem}</label><br>`;
+              //create set of radio buttons for each question
+              var j=0;
+              for (qo of q.options){
+                content += `<input type="radio" name="q`+i+`" id="`+i+`" value="`+j+`">${qo}</input><br>`;
+                j++;
+              }
+              content += '</div>';
+              content += '\n';
+              i++;
+            }
+            content += "<input type=\"submit\"> </input> </form>"
+            qDiv.innerHTML = content;
+        }
+    }
+
+    /*function checkAnswer(question, answer){
+      let xReq = new XMLHttpRequest();
+      xReq.onreadystatechange = () => {
+        let qDiv = document.getElementById('qDiv');
+        var content = "";
+        var qCheck = document.getElementsByTagName('label');
+        console.log(qCheck.length);
+        console.log(this.responseText);
+        for (var q = 0; q<qCheck.length; q++){
+          console.log(q);
+          if (q == question){
+            content += "Question"+question+": "
+            content += this.responseText;
+          }
+        }
+        qDiv.innerHTML += content;
+      };
+
+      xReq.open('POST','/questionFeedback?question='+question+'&answer='+answer,true);
+      xReq.send();
+    }*/
+
+</script>
+</html>
